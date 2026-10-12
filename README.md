@@ -104,4 +104,20 @@ flowchart TD
     B --> H[Calculator Tool]
     B --> I[Date and Time Tool]
     G --> A
+```## System Architecture
+
+NexaAI Studio combines conversational AI, PDF-based retrieval-augmented generation (RAG), and tool-using AI agents in one application.
+
+```mermaid
+flowchart TD
+    A[Streamlit User Interface] --> B[AI Chat and Agent]
+    A --> C[PDF Upload and Processing]
+    C --> D[Text Extraction and Chunking]
+    D --> E[Ollama Embeddings]
+    E --> F[ChromaDB Vector Store]
+    B --> G[Groq LLM API]
+    F --> B
+    B --> H[Calculator Tool]
+    B --> I[Date and Time Tool]
+    G --> A
 ```
