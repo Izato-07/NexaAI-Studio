@@ -1,7 +1,5 @@
-
-
 streamlit
 groq
-ollama
+sentence-transformers
 pypdf
 chromadb

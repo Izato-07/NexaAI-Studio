@@ -7,8 +7,8 @@ import tempfile
 from datetime import datetime
 
 import chromadb
-import ollama
 import streamlit as st
+from sentence_transformers import SentenceTransformer
 from groq import Groq
 from pypdf import PdfReader
 
@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 CHAT_MODEL = "openai/gpt-oss-120b"
-EMBED_MODEL = "nomic-embed-text"
+EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 150
 
@@ -114,6 +114,11 @@ def get_vector_db():
     return chromadb.Client()
 
 
+@st.cache_resource
+def get_embedding_model():
+    return SentenceTransformer(EMBED_MODEL)
+
+
 def process_pdf(uploaded_file):
     pages = extract_pdf(uploaded_file)
 
@@ -150,10 +155,10 @@ def process_pdf(uploaded_file):
 
     for start in range(0, len(documents), batch_size):
         batch = documents[start:start + batch_size]
-        embeddings = ollama.embed(
-            model=EMBED_MODEL,
-            input=batch,
-        )["embeddings"]
+        embeddings = get_embedding_model().encode(
+            batch,
+            normalize_embeddings=True,
+        ).tolist()
 
         collection.add(
             ids=ids[start:start + batch_size],
@@ -166,10 +171,10 @@ def process_pdf(uploaded_file):
 
 
 def retrieve_context(collection, question):
-    embedding = ollama.embed(
-        model=EMBED_MODEL,
-        input=question,
-    )["embeddings"][0]
+    embedding = get_embedding_model().encode(
+        question,
+        normalize_embeddings=True,
+    ).tolist()
 
     results = collection.query(
         query_embeddings=[embedding],
@@ -314,7 +319,7 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.caption("Powered by Groq, Ollama, and ChromaDB.")
+    st.caption("Powered by Groq, Sentence Transformers, and ChromaDB.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
