@@ -39,7 +39,7 @@ NexaAI Studio is a Python-based application that combines an AI chatbot, Retriev
 1. Clone this repository:
 
    ```bash
-   git clone YOUR_GITHUB_REPOSITORY_URL
+   git clone https://github.com/Izato-07/NexaAI-Studio
    cd NexaAI-Studio
    ```
 
